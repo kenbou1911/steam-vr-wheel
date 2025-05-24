@@ -5,7 +5,7 @@ from steam_vr_wheel._virtualpad import VirtualPad, RightTrackpadAxisDisablerMixi
 
 class Throttle():
 
-    def __init__(self, size=0.3, inverted = False, starting = 0):
+    def __init__(self, size=0.2, inverted = False, starting = 0):
         self.throttle_z = starting
         self.throttle_real_world_z = 0
         self.throttle_at_real_world_z = 0
@@ -42,7 +42,7 @@ class Throttle():
 
 class Joystick(RightTrackpadAxisDisablerMixin, LeftTrackpadAxisDisablerMixin, VirtualPad):
     def __init__(self):
-        self.amplification = 10
+        self.amplification = 4
         super().__init__()
         self.x = 0
         self.y = 0
@@ -100,7 +100,7 @@ class Joystick(RightTrackpadAxisDisablerMixin, LeftTrackpadAxisDisablerMixin, Vi
 
         self.device.set_axis(HID_USAGE_X, int(axisX * self.amplification * 0x8000))
         self.device.set_axis(HID_USAGE_Y, int(axisY * self.amplification * 0x8000))
-        self.device.set_axis(HID_USAGE_Z, int(axisZ * 0x8000))
+        self.device.set_axis(HID_USAGE_Z, int(axisZ * self.amplification * 0x8000))
 
     def _update_grabbable_joystick(self, axisX, axisY, axisZ):
 
@@ -116,12 +116,8 @@ class Joystick(RightTrackpadAxisDisablerMixin, LeftTrackpadAxisDisablerMixin, Vi
         super().update(left_ctr, right_ctr)
 
         axisX = (-right_ctr.yaw + 90) / 180
-        if right_ctr.roll >= 0:
-            axisY = 90 - right_ctr.roll
-        else:
-            axisY = -(90 + right_ctr.roll)
-        axisY = -(axisY + 90) / 180 + 1
-        axisZ = (-right_ctr.pitch + 90) / 180
+        axisY = (right_ctr.roll + 35) / 180
+        axisZ = (-right_ctr.pitch + 45) / 180
 
         if self.config.joystick_updates_only_when_grabbed:
             self._update_grabbable_joystick(axisX, axisY, axisZ)
